@@ -1,179 +1,102 @@
-// import logo from './logo.svg';
-import './App.css';
-import React from "react"
-import CardList from './Components/Card-List/Card-list_component';
-import SearchBox from './Components/Search-Box/search-box_component'
+import { useState, useEffect } from "react";
+import React from "react";
+import "./App.css";
+import CardList from "./Components/Card-List/Card-list_component.jsx";
+import SearchBox from "./Components/Search-Box/search-box_component.jsx";
 
+function App() {
+  const [monsters, setMonsters] = useState([]);
+  const [searchField, setSearchField] = useState("");
+  // const [stringField, setStringField] = useState('')
+  const [filteredMonsters, setFilteredMonsters] = useState(monsters)
+  console.log('render')
 
-class App extends React.Component{
-  constructor() {
-    super();
-  
-    this.state = {
-      monsters: [],
-      searchField: ""
+  useEffect(() => {
+    async function fetchData() {
+      const data = await fetch('http://jsonplaceholder.typicode.com/users');
+      const user = await data.json();
+      setMonsters(user);
     }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+
+    const newFilteredMonsters = monsters.filter(monster =>
+      monster.name.toLocaleLowerCase().includes(searchField)
+    );
+    setFilteredMonsters(newFilteredMonsters)
 
 
-  };
-  async componentDidMount(){
-    const data =  await fetch('http://jsonplaceholder.typicode.com/users')
-    const user = await data.json()
+  }, [monsters, searchField])
 
-    this.setState(
-      () => {
-        return {monsters:user}
-      }
-    )
-  }
-  onSearchChange =(event) => {
+  const onSearchChange = event => {
     const searchField = event.target.value.toLocaleLowerCase();
-    this.setState(()=>{
-      return { searchField }
-    })
+    setSearchField(searchField);
   }
 
+  // const onStringChange = (event) => {
+  //   setStringField(event.target.value)
+  // }
+  // console.log(filteredMonsters)
 
-  render() {
-    const {monsters, searchField} = this.state
-    const {onSearchChange} = this
-    const filteredMonsters = monsters.filter((monster)=>{
-      return monster.name.toLocaleLowerCase().includes(searchField)
-    })
-  
-    return(
-      <div className="App">
-        <h1 className='app-title'>Monsters Rolodex</h1>
-        {/* <input 
-          className='search-box' 
-          type="search" 
-          placeholder='search monster' 
-          onChange={onSearchChange}
-        //   onChange={(event)=>{
-        //     const searchField= event.target.value.toLocaleLowerCase()
-        //     // console.log(event.target.value)
-        //     // const searchString = event.target.value.toLocaleLowerCase() //convert all letter to lowercase
-        //     // const filteredMonsters = this.state.monsters.filter((monster)=>{
-        //     //   return monster.name.toLocaleLowerCase().includes(searchString)
-        //     // })
-        //     this.setState(()=>{
-        //       // return {monsters:filteredMonsters}
-        //       return { searchField }
-        //     })
-        //   }
-        // } 
-        /> */}
+  return (
+    <div className="App">
+      <h1 className='app-title'>Monsters Rolodex</h1>
+      {/* < SearchBox onChangeHandler={onStringChange} placeholder='set String' /> */}
 
-
-        {/* {
-          filteredMonsters.map((monster) => {
-            return(
-              <div  key={monster.id}>
-                <h1>  {monster.name}</h1>
-                <p>  {monster.email}</p>
-
-              </div>
-            )
-          })
-        } */}
-        
-        < SearchBox onChangeHandler={onSearchChange}  placeholder='search monster' className='search-box'/>
-        <CardList  monsters={filteredMonsters} />
-       
-      </div>
-    )
-  }
-  
+      < SearchBox onChangeHandler={onSearchChange} placeholder='search monster' className='search-box' />
+      <CardList monsters={filteredMonsters} />
+    </div>
+  )
 }
 
-
 // class App extends React.Component{
-//   constructor() {
+
+//  constructor() {
 //     super();
-  
+
 //     this.state = {
-//       monsters: [
-//         {name:"Prince",id:"12340er"},
-//         {name:"Chijioke",id:"12340er34"},
-//         {name:"Blessing",id:"12340erdf"},
-//         {name:"Prince",id:"1112340er"},
-
-//       ]
+//       monsters: [],
+//       searchField: ""
 //     }
+
 //   };
+//   async componentDidMount(){
+//     const data =  await fetch('http://jsonplaceholder.typicode.com/users')
+//     const user = await data.json()
+
+//     this.setState(
+//       () => {
+//         return {monsters:user}
+//       }
+//     )
+//   }
+//   onSearchChange =(event) => {
+//     const searchField = event.target.value.toLocaleLowerCase();
+//     this.setState(()=>{
+//       return { searchField }
+//     })
+//   }
+
 //   render() {
+//     const {monsters, searchField} = this.state
+//     const {onSearchChange} = this
+//     const filteredMonsters = monsters.filter((monster)=>{
+//       return monster.name.toLocaleLowerCase().includes(searchField)
+//     })
+
 //     return(
 //       <div className="App">
-//         {
-//           this.state.monsters.map((monster) => {
-//             return(
-//               <div  key={monster.id}>
-//                 <h1>  {monster.name}</h1>
-//               </div>
-//             )
-//           })
-//         }
-       
+//         <h1 className='app-title'>Monsters Rolodex</h1>
+//         < SearchBox onChangeHandler={onSearchChange}  placeholder='search monster' className='search-box'/>
+//         <CardList  monsters={filteredMonsters} />
+
 //       </div>
 //     )
 //   }
-  
+
 // }
 
-// class App extends React.Component{
-// constructor() {
-//   super();
-
-//   this.state = {
-//     name: {firstName:'Kings', lastName:"ogbonnaya"},
-//     company: 'Kings Company'
-//   }
-// }
-
-//   render() {
-//     return(
-//       <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//          HI {this.state.name.firstName} {this.state.name.lastName} and I work with {this.state.company}
-//         </p>
-//         <button onClick={()=> {
-//           this.setState(
-//             ()=>{
-//               return {
-//                 name:{firstName:"Kings", lastName:"Ikemba"},
-//                 company:"Decagon"
-//               }
-//             },
-//             ()=>{console.log(this.state)}
-//           )
-//         } }>Change Name</button>
-//       </header>
-//       </div>
-//     )
-//   }
-// }
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
 
 export default App;
